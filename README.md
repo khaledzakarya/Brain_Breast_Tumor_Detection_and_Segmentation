@@ -150,6 +150,7 @@ pip install -r requirements.txt
 ## 📬 Contact
 
 For any questions or feedback, please contact:  
-- `[khaledzzyadaa@gmail.com]`
-- `[khhelmy654@gmail.com]`  
+- khaledzzyadaa@gmail.com
+- khhelmy654@gmail.com
+
 or open an issue in this repository.

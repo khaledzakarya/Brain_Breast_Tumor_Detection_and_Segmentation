@@ -52,21 +52,21 @@ The system follows a conditional multi-model pipeline based on the input type:
 - Architecture: Custom CNN
 - Output: Brain or Breast
 
-    ![alt text](Images\image.png)
+    ![alt text](Images/image.png)
 
 ### 🔹 Model 2: Brain Tumor Detection
 - Type: Binary Classifier
 - Architecture: Xception
 - Metrics: Accuracy, Precision, Recall
 
-    ![alt text](Images\image-1.png)
+    ![alt text](Images/image-1.png)
 
 ### 🔹 Model 3: Brain Tumor Segmentation
 - Type: Semantic Segmentation
 - Architecture: U-Net
 - Loss Function: Dice + Binary Cross-Entropy
 
-    ![alt text](Images\image-2.png)
+    ![alt text](Images/image-2.png)
 
 ### 🔹 Model 4: Breast Tumor Classification
 - Type: Multiclass Classifier
@@ -74,14 +74,14 @@ The system follows a conditional multi-model pipeline based on the input type:
 - Classes: Normal, Benign, Malignant
 - Imbalance Handling: Random Oversampling
 
-    ![alt text](Images\image-3.png)
+    ![alt text](Images/image-3.png)
 
 ### 🔹 Model 5: Breast Tumor Segmentation
 - Type: Semantic Segmentation
 - Architecture: U-Net
 - Loss Function: Dice + Categorical Cross-Entropy
 
-    ![alt text](Images\image-4.png)
+    ![alt text](Images/image-4.png)
 ---
 
 ## ⚙️ Implementation Details

@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 
 @st.cache_resource
 def load_models():
-    brain_breast_classifier = load_model("brain_vs_breast_classifier.keras")  
+    brain_breast_classifier = load_model("classification_model.h5")  
     brain_tumor_detector = load_model("Brain_Classification_Model.h5")        
     breast_tumor_detector = load_model("Breast_Classification_Model (1).h5")  
     brain_segmentor = load_model("final_brain_unet_model.h5")                 
@@ -20,6 +20,13 @@ def preprocess_grayscale(img):
     img_array = np.array(img) / 255.0
     img_array = np.expand_dims(img_array, axis=-1)
     return np.expand_dims(img_array, axis=0)
+
+def preprocess_rgb2(img, size=(224, 224)):
+    img_array = np.array(img)
+    img_tensor = tf.convert_to_tensor(img_array, dtype=tf.float32)
+    img_tensor = tf.image.resize(img_tensor, size)
+    img_tensor = img_tensor / 255.0
+    return np.expand_dims(img_tensor.numpy(), axis=0)
 
 def preprocess_rgb(img, size=(224, 224)):
     img = img.resize(size).convert('RGB')
@@ -54,24 +61,26 @@ def show_segmentation_result(original, mask, size=(224, 224)):
 
     st.pyplot(fig)
 
-st.title("🧠🩺 Brain/Breast Tumor Classification, Detection & Segmentation")
+st.title("🩺 Brain/Breast Tumor Classification, Detection & Segmentation")
 
 uploaded_file = st.file_uploader("📤 Upload a brain or breast scan image", type=["jpg", "jpeg", "png"])
 
 if uploaded_file:
     image = Image.open(uploaded_file).convert("RGB")
-    st.image(image, caption="📷 Uploaded Image", use_column_width=True)
+    st.image(image, caption="📷 Uploaded Image", use_container_width=True)
 
-    st.write("⏳ Processing...")
+    st.write("Processing...")
 
     bb_classifier, brain_detector, breast_detector, brain_segmentor, breast_segmentor = load_models()
 
     #Classify brain or breast
-    image_for_classification = preprocess_grayscale(image)
-    classification = np.argmax(bb_classifier.predict(image_for_classification))
+    image_for_classification = preprocess_rgb2(image)
+    prediction = bb_classifier.predict(image_for_classification)
+    classification = 1 if prediction[0][0] > 0.5 else 0
+    
 
     if classification == 0:
-        st.subheader("🧠 Classification: Brain")
+        st.subheader("Classification: Brain")
 
         #Brain tumor detection
         image_for_detection = preprocess_rgb(image)
@@ -80,7 +89,7 @@ if uploaded_file:
 
         if tumor_prob < 0.5:
             st.error("🔴 Brain tumor detected")
-            if st.checkbox("🧪 Run Brain Tumor Segmentation"):
+            if st.checkbox("Run Brain Tumor Segmentation"):
                 input_size = brain_segmentor.input_shape[1:3]
                 image_for_segment = preprocess_rgb(image, size=input_size)
                 mask = brain_segmentor.predict(image_for_segment)
@@ -89,7 +98,7 @@ if uploaded_file:
             st.success("🟢 No brain tumor detected")
 
     else:
-        st.subheader("🧬 Classification: Breast")
+        st.subheader("Classification: Breast")
 
         #Breast tumor detection
         image_for_detection = preprocess_rgb(image)
@@ -99,7 +108,7 @@ if uploaded_file:
         st.write(f"**Tumor Type:** {class_names[predicted_class]}")
 
         if predicted_class in [0, 1]:
-            if st.checkbox("🧪 Run Breast Tumor Segmentation"):
+            if st.checkbox("Run Breast Tumor Segmentation"):
                 input_size = breast_segmentor.input_shape[1:3]
                 image_for_segment = preprocess_rgb(image, size=input_size)
                 mask = breast_segmentor.predict(image_for_segment)
